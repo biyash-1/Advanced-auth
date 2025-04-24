@@ -1,13 +1,15 @@
 import jwt from "jsonwebtoken";
 import User from "../model/UserModel.js";
 import bcryptjs from "bcryptjs";
-import {sendVerificationEmail,sendwelcomeEmail} from "../mailtrap/Emails.js"
+import {sendVerificationEmail,sendwelcomeEmail,sendPasswordResetEmail} from "../mailtrap/Emails.js"
 import dotenv from "dotenv";
+import crypto from "crypto";
+
 dotenv.config();
 
 const setCookie = (res, userId) => {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
-    expiresIn: "7d",
+    expiresIn: "8d",
   });
 
   res.cookie("token", token, {
@@ -179,12 +181,10 @@ export const  forgetPassword = async(req, res) =>{
 
         if(!user){
           return res.status(400).json({sucess:false,message:"user not found"})
-
         }
 
         const resetToken = crypto.randomBytes(20).toString("hex");
         const resetTokenEXpiresAt = Date.now() +1*60*60&1000;
-
         user.resetPasswordToken = resetToken
         user.resetPasswordExpiresAt = resetTokenEXpiresAt
 
