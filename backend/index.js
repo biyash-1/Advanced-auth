@@ -2,13 +2,21 @@ import express from "express";
 import { connectDb } from "./db.js";
 import authRoutes from "./routes/auth.js";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 dotenv.config();
+import cors from "cors"
 
 const app = express();
+app.use(cors({
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: 'http://localhost:3000',  
+  credentials: true,               
+}))
 app.use(express.json());
-const PORT = 3000;
+app.use(cookieParser())
+const PORT = 5000;
 
-// Correctly mount auth routes
+
 app.use('/api/auth', authRoutes);
 
 app.get('/', (req, res) => {
