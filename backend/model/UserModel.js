@@ -26,9 +26,9 @@ isverified:{
 },
 
 resetPasswordToken:String,
-resetPasswordExpiresAt: String,
+resetPasswordExpiresAt: Date,
 verificationToken:String,
-verificationTokenExpiresAt:String
+verificationTokenExpiresAt:Date
 })
 
 export default mongoose.model("User", userSchema);
