@@ -168,7 +168,7 @@ export const loginController = async (req, res) => {
 };
 
 export const logout = async(req,res) =>{
-  clearCookie();
+  clearCookie(res);
   res.status(200).json({sucess: "true", message:"logout sucesfull"})
 }
 
@@ -184,9 +184,8 @@ export const  forgetPassword = async(req, res) =>{
         }
 
         const resetToken = crypto.randomBytes(20).toString("hex");
-        const resetTokenEXpiresAt = Date.now() +1*60*60&1000;
         user.resetPasswordToken = resetToken
-        user.resetPasswordExpiresAt = resetTokenEXpiresAt
+        user.resetPasswordExpiresAt = Date.now() + 3600000;
 
         // send email
         const resetURL = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
@@ -207,7 +206,10 @@ export const  forgetPassword = async(req, res) =>{
 export const resetPassword = async(req,res) =>{
   try{
     const {token} = req.params;
+    console.log("token is",token)
         const {password} = req.body;
+        console.log("password is",password);
+        
         const user = await User.findOne({
           resetPasswordToken:token,
           resetPasswordExpiresAt: {$gt:Date.now()}
