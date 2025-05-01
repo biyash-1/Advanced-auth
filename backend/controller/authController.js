@@ -186,6 +186,7 @@ export const  forgetPassword = async(req, res) =>{
         const resetToken = crypto.randomBytes(20).toString("hex");
         user.resetPasswordToken = resetToken
         user.resetPasswordExpiresAt = Date.now() + 3600000;
+        await user.save();
 
         // send email
         const resetURL = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
@@ -214,12 +215,13 @@ export const resetPassword = async(req,res) =>{
           resetPasswordToken:token,
           resetPasswordExpiresAt: {$gt:Date.now()}
         })
+        console.log("User found:", user);
 
         if(!user){
           return res.status(400).json({sucess:false, message:"inavlid or expired reset token"})
         }
 
-        const hashedPassword = await bcrypt.hash(password,10);
+        const hashedPassword = await bcryptjs.hash(password,10);
         user.password = hashedPassword;
         user.resetPasswordToken = undefined;
         user.resetPasswordExpiresAt = undefined
